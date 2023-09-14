@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: exhort
+    app.kubernetes.io/created-by: application-service
+    app.kubernetes.io/instance: exhort
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: exhort
+    app.kubernetes.io/part-of: exhort
+  name: exhort
+  namespace: exhort
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app: exhort
+      app.kubernetes.io/instance: exhort
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: exhort
+        app.kubernetes.io/instance: exhort
+    spec:
+      containers:
+      - env:
+        - name: API_SNYK_TOKEN
+          valueFrom:
+            secretKeyRef:
+              key: api-snyk-token
+              name: exhort-secret
+        - name: API_TRUSTEDCONTENT_DISABLED
+          value: "true"
+        - name: TELEMETRY_DISABLED
+          value: "true"
+        image: quay.io/ecosystem-appeng/exhort:latest
+        imagePullPolicy: IfNotPresent
+        name: exhort
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        - containerPort: 9000
+          name: management
+          protocol: TCP
+        resources:
+          limits:
+            cpu: 500m
+            memory: 128Mi
+          requests:
+            cpu: 10m
+            memory: 128Mi
+status: {}
